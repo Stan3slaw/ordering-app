@@ -1,0 +1,43 @@
+services:
+  orders:
+    container_name: orders
+    build:
+      context: .
+      target: development
+      dockerfile: ./apps/order/Dockerfile
+    command: pnpm start:dev order
+    ports:
+      - 3000:3000
+    networks:
+      - sharednet
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    env_file:
+      - ./apps/order/.env
+      - .env
+    environment:
+      PG_HOST: host.docker.internal
+    depends_on:
+      - postgres
+
+  postgres:
+    container_name: shopify-postgres
+    image: postgres:16.1
+    networks:
+      - sharednet
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+      PG_DATA: /var/lib/postgresql/data
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+networks:
+  sharednet:
+volumes:
+  pgdata:
