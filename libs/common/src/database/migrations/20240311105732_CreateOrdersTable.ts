@@ -4,6 +4,7 @@ export async function up(knex: Knex): Promise<void> {
   await knex.schema
     .createTable('orders', (table) => {
       table.increments('id').primary();
+      table.integer('order_id').notNullable().unique();
       table.string('name').notNullable();
       table.integer('total_price').notNullable();
       table.string('details').nullable();
