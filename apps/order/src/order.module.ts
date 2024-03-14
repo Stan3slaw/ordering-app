@@ -2,11 +2,14 @@ import { Module } from '@nestjs/common';
 import * as Joi from 'joi';
 import { ConfigModule } from '@nestjs/config';
 
-import { KnexService, LoggerModule } from '@app/common';
+import { ScheduleModule } from '@nestjs/schedule';
+
+import { KnexService, LoggerModule, RmqModule } from '@app/common';
 
 import { OrderController } from './order.controller';
 import { OrderService } from './order.service';
 import { OrderRepository } from './order.repository';
+import { ORDER_COLLECTOR_SERVICE } from './constants/services.constants';
 
 @Module({
   imports: [
@@ -21,11 +24,16 @@ import { OrderRepository } from './order.repository';
         DB_DATABASE: Joi.string().required(),
         DB_PORT: Joi.number().required(),
       }),
-      envFilePath: ['../.env', '../../.env'],
+      envFilePath: ['./apps/order/.env', '.env'],
     }),
     LoggerModule,
+    RmqModule.register({
+      name: ORDER_COLLECTOR_SERVICE,
+    }),
+    ScheduleModule.forRoot(),
   ],
   controllers: [OrderController],
   providers: [KnexService, OrderService, OrderRepository],
+  exports: [OrderRepository],
 })
 export class OrderModule {}

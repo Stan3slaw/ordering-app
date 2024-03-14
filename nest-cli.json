@@ -19,6 +19,15 @@
         "tsConfigPath": "apps/order/tsconfig.app.json"
       }
     },
+    "order-collector": {
+      "type": "application",
+      "root": "apps/order-collector",
+      "entryFile": "main",
+      "sourceRoot": "apps/order-collector/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/order-collector/tsconfig.app.json"
+      }
+    },
     "common": {
       "type": "library",
       "root": "libs/common",

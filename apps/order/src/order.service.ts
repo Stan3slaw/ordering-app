@@ -1,5 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { isNil } from 'lodash';
+import { ClientProxy } from '@nestjs/microservices';
+import { Cron, CronExpression } from '@nestjs/schedule';
+
+import { Logger } from '@app/common';
 
 import { OrderRepository } from './order.repository';
 import type { CreateOrderDto } from './dtos/create-order.dto';
@@ -8,16 +12,25 @@ import type { CreateOrder } from './interfaces/create-order.interface';
 import type { OrderEntity } from './entities/order.entity';
 import type { UpdateOrderDto } from './dtos/update-order.dto';
 import type { UpdateOrder } from './interfaces/update-order.interface';
+import { ORDER_COLLECTOR_SERVICE } from './constants/services.constants';
 
 @Injectable()
 export class OrderService {
-  constructor(private readonly orderRepository: OrderRepository) {}
+  constructor(
+    private readonly logger: Logger,
+    private readonly orderRepository: OrderRepository,
+    @Inject(ORDER_COLLECTOR_SERVICE)
+    private readonly orderCollectorClient: ClientProxy,
+  ) {
+    this.logger.setContext(OrderService.name);
+  }
 
   private static mapOrderEntityToOrderResponseDto(
     orderEntity: OrderEntity,
   ): OrderResponseDto {
     return {
       id: orderEntity.id,
+      orderId: orderEntity.order_id,
       name: orderEntity.name,
       totalPrice: orderEntity.total_price,
       details: orderEntity.details,
@@ -30,6 +43,7 @@ export class OrderService {
     createOrderDto: CreateOrderDto,
   ): CreateOrder {
     return {
+      order_id: createOrderDto.orderId,
       name: createOrderDto.name,
       total_price: createOrderDto.totalPrice,
       details: createOrderDto.details,
@@ -57,7 +71,7 @@ export class OrderService {
   }
 
   async create(createOrderDto: CreateOrderDto): Promise<OrderResponseDto> {
-    const createdOrder = await this.orderRepository.create(
+    const createdOrder = await this.orderRepository.insert(
       OrderService.mapCreateOrderDtoToOrderEntity(createOrderDto),
     );
 
@@ -107,5 +121,10 @@ export class OrderService {
     const deletedOrderId = await this.orderRepository.delete(bookId);
 
     return deletedOrderId;
+  }
+
+  @Cron(CronExpression.EVERY_10_MINUTES)
+  async collectOrders(): Promise<void> {
+    await this.orderCollectorClient.emit('collect_orders', {});
   }
 }

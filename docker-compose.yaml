@@ -20,6 +20,25 @@ services:
       PG_HOST: host.docker.internal
     depends_on:
       - postgres
+      - rabbitmq
+
+  orders-collector:
+    container_name: orders-collector
+    build:
+      context: .
+      target: development
+      dockerfile: ./apps/order-collector/Dockerfile
+    command: pnpm start:dev order-collector
+    networks:
+      - sharednet
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    env_file:
+      - ./apps/order-collector/.env
+    depends_on:
+      - postgres
+      - rabbitmq
 
   postgres:
     container_name: shopify-postgres
@@ -37,6 +56,14 @@ services:
       - pgdata:/var/lib/postgresql/data
     ports:
       - 5432:5432
+
+  rabbitmq:
+    image: rabbitmq
+    networks:
+      - sharednet
+    ports:
+      - '5672:5672'
+
 networks:
   sharednet:
 volumes:

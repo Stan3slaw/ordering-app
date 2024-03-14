@@ -11,14 +11,16 @@ import type { UpdateOrder } from './interfaces/update-order.interface';
 export class OrderRepository {
   constructor(private readonly knexService: KnexService) {}
 
-  async create(
-    createOrder: CreateOrder,
+  async insert(
+    createOrder: CreateOrder | CreateOrder[],
     trx?: Knex.Transaction<unknown, unknown[]>,
   ): Promise<OrderEntity> {
-    const knex = trx ?? this.knexService.knex;
+    const knex = trx ?? this.knexService.getKnex();
 
     const [createdOrder] = await knex('orders')
       .insert(createOrder)
+      .onConflict('order_id')
+      .ignore()
       .returning('*');
 
     return createdOrder;
@@ -27,7 +29,7 @@ export class OrderRepository {
   async findAll(
     trx?: Knex.Transaction<unknown, unknown[]>,
   ): Promise<OrderEntity[]> {
-    const knex: Knex = trx ?? this.knexService.knex;
+    const knex: Knex = trx ?? this.knexService.getKnex();
     const foundOrders = await knex('orders').select<OrderEntity[]>();
 
     return foundOrders;
@@ -37,7 +39,7 @@ export class OrderRepository {
     orderId: number,
     trx?: Knex.Transaction<unknown, unknown[]>,
   ): Promise<OrderEntity> {
-    const knex: Knex = trx ?? this.knexService.knex;
+    const knex: Knex = trx ?? this.knexService.getKnex();
     const foundOrder = await knex('orders')
       .first<OrderEntity>()
       .where({ id: orderId });
@@ -51,7 +53,7 @@ export class OrderRepository {
     updateOrder: UpdateOrder,
     trx?: Knex.Transaction<unknown, unknown[]>,
   ): Promise<OrderEntity> => {
-    const knex = trx ?? this.knexService.knex;
+    const knex = trx ?? this.knexService.getKnex();
     const [updatedOrder] = await knex('orders')
       .update(updateOrder)
       .where({ id: orderId })
@@ -64,7 +66,7 @@ export class OrderRepository {
     orderId: number,
     trx?: Knex.Transaction<unknown, unknown[]>,
   ): Promise<number> {
-    const knex: Knex = trx ?? this.knexService.knex;
+    const knex: Knex = trx ?? this.knexService.getKnex();
     const [deletedOrderId] = await knex('orders')
       .del()
       .where({ id: orderId })
