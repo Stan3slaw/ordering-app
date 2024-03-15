@@ -4,6 +4,7 @@ import * as Joi from 'joi';
 import { ScheduleModule } from '@nestjs/schedule';
 
 import { KnexService, LoggerModule, RmqModule } from '@app/common';
+
 import { OrderModule } from 'apps/order/src/order.module';
 
 import { OrderCollectorController } from './order-collector.controller';

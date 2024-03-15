@@ -2,11 +2,12 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { isEmpty } from 'lodash';
 
+import { Logger } from '@app/common';
+
 import type { CreateOrder } from 'apps/order/src/interfaces/create-order.interface';
 import { OrderRepository } from 'apps/order/src/order.repository';
 import type { OrderEntity } from 'apps/order/src/entities/order.entity';
 import type { OrderResponseDto } from 'apps/order/src/dtos/order-response.dto';
-import { Logger } from '@app/common';
 
 import { OrderApiService } from './order-api/order-api.service';
 import type { OrderedProductEntity } from './order-api/entities/ordered-product.entity';

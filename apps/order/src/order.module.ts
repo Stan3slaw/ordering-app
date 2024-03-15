@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import * as Joi from 'joi';
 import { ConfigModule } from '@nestjs/config';
-
 import { ScheduleModule } from '@nestjs/schedule';
 
 import { KnexService, LoggerModule, RmqModule } from '@app/common';

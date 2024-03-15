@@ -72,6 +72,18 @@ module.exports = {
           ['internal', 'parent', 'sibling', 'index'],
         ],
         'newlines-between': 'always-and-inside-groups',
+        pathGroups: [
+          {
+            pattern: '@app/**',
+            group: 'external',
+            position: 'after',
+          },
+          {
+            pattern: 'apps/**',
+            group: 'external',
+            position: 'after',
+          },
+        ],
       },
     ],
     'object-shorthand': ['error'],
