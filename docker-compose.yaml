@@ -40,6 +40,26 @@ services:
       - postgres
       - rabbitmq
 
+  notifications:
+    container_name: notifications
+    build:
+      context: .
+      target: development
+      dockerfile: ./apps/notification/Dockerfile
+    command: pnpm start:dev notification
+    ports:
+      - 3001:3001
+    networks:
+      - sharednet
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    env_file:
+      - ./apps/notification/.env
+    depends_on:
+      - postgres
+      - rabbitmq
+
   postgres:
     container_name: shopify-postgres
     image: postgres:16.1

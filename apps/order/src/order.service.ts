@@ -71,7 +71,7 @@ export class OrderService {
   }
 
   async create(createOrderDto: CreateOrderDto): Promise<OrderResponseDto> {
-    const createdOrder = await this.orderRepository.insert(
+    const [createdOrder] = await this.orderRepository.insert(
       OrderService.mapCreateOrderDtoToOrderEntity(createOrderDto),
     );
 

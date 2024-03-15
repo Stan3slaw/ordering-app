@@ -9,6 +9,7 @@ import { OrderModule } from 'apps/order/src/order.module';
 import { OrderCollectorController } from './order-collector.controller';
 import { OrderCollectorService } from './order-collector.service';
 import { OrderApiModule } from './order-api/order-api.module';
+import { NOTIFICATION_SERVICE } from './constants/services.constants';
 
 @Module({
   imports: [
@@ -23,7 +24,9 @@ import { OrderApiModule } from './order-api/order-api.module';
       }),
       envFilePath: './apps/order-collector/.env',
     }),
-    RmqModule,
+    RmqModule.register({
+      name: NOTIFICATION_SERVICE,
+    }),
     OrderApiModule,
     OrderModule,
     LoggerModule,

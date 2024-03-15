@@ -14,10 +14,10 @@ export class OrderRepository {
   async insert(
     createOrder: CreateOrder | CreateOrder[],
     trx?: Knex.Transaction<unknown, unknown[]>,
-  ): Promise<OrderEntity> {
+  ): Promise<OrderEntity[]> {
     const knex = trx ?? this.knexService.getKnex();
 
-    const [createdOrder] = await knex('orders')
+    const createdOrder = await knex('orders')
       .insert(createOrder)
       .onConflict('order_id')
       .ignore()
