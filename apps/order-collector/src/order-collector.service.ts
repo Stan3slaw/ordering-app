@@ -72,9 +72,10 @@ export class OrderCollectorService {
         OrderCollectorService.mapOrderEntityToOrderResponseDto(order),
       );
 
-      this.notificationClient.emit('new_orders_collected', {
-        payload: mappedOrdersToResponse,
-      });
+      this.notificationClient.emit(
+        'new_orders_collected',
+        mappedOrdersToResponse,
+      );
     }
   }
 }

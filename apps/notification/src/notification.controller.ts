@@ -15,7 +15,7 @@ export class NotificationController {
 
   @EventPattern('new_orders_collected')
   async handleNewOrders(
-    @Payload('payload')
+    @Payload()
     payload: OrderResponseDto | OrderResponseDto[],
     @Ctx() context: RmqContext,
   ): Promise<void> {
