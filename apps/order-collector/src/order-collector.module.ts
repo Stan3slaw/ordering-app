@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
 import { ScheduleModule } from '@nestjs/schedule';
 
-import { KnexService, LoggerModule, RmqModule } from '@app/common';
+import { KnexModule, LoggerModule, RmqModule } from '@app/common';
 
 import { OrderModule } from 'apps/order/src/order.module';
 
@@ -30,10 +30,11 @@ import { NOTIFICATION_SERVICE } from './constants/services.constants';
     }),
     OrderApiModule,
     OrderModule,
+    KnexModule,
     LoggerModule,
     ScheduleModule.forRoot(),
   ],
   controllers: [OrderCollectorController],
-  providers: [OrderCollectorService, KnexService],
+  providers: [OrderCollectorService],
 })
 export class OrderCollectorModule {}

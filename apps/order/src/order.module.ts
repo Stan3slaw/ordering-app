@@ -3,7 +3,7 @@ import * as Joi from 'joi';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 
-import { KnexService, LoggerModule, RmqModule } from '@app/common';
+import { KnexModule, LoggerModule, RmqModule } from '@app/common';
 
 import { OrderController } from './order.controller';
 import { OrderService } from './order.service';
@@ -25,6 +25,7 @@ import { ORDER_COLLECTOR_SERVICE } from './constants/services.constants';
       }),
       envFilePath: ['./apps/order/.env', '.env'],
     }),
+    KnexModule,
     LoggerModule,
     RmqModule.register({
       name: ORDER_COLLECTOR_SERVICE,
@@ -32,7 +33,7 @@ import { ORDER_COLLECTOR_SERVICE } from './constants/services.constants';
     ScheduleModule.forRoot(),
   ],
   controllers: [OrderController],
-  providers: [KnexService, OrderService, OrderRepository],
+  providers: [OrderService, OrderRepository],
   exports: [OrderRepository],
 })
 export class OrderModule {}

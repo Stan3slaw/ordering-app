@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
 import type { Knex } from 'knex';
 import KnexInit from 'knex';
@@ -9,10 +8,7 @@ import knexConfiguration from './knex.configuration';
 
 @Injectable()
 export class KnexService {
-  constructor(
-    private readonly configService: ConfigService,
-    private readonly logger: Logger,
-  ) {
+  constructor(private readonly logger: Logger) {
     this.logger.setContext(KnexService.name);
   }
 
