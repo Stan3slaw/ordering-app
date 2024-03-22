@@ -60,6 +60,66 @@ services:
       - postgres
       - rabbitmq
 
+  auth:
+    container_name: auth
+    build:
+      context: .
+      target: development
+      dockerfile: ./apps/auth/Dockerfile
+    command: pnpm start:dev auth
+    ports:
+      - 3002:3002
+    networks:
+      - sharednet
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    env_file:
+      - ./apps/auth/.env
+    depends_on:
+      - postgres
+      - rabbitmq
+
+  users:
+    container_name: users
+    build:
+      context: .
+      target: development
+      dockerfile: ./apps/user/Dockerfile
+    command: pnpm start:dev user
+    ports:
+      - 3003:3003
+    networks:
+      - sharednet
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    env_file:
+      - ./apps/user/.env
+    depends_on:
+      - postgres
+      - rabbitmq
+
+  oauth:
+    container_name: oauth
+    build:
+      context: .
+      target: development
+      dockerfile: ./apps/oauth/Dockerfile
+    command: pnpm start:dev oauth
+    ports:
+      - 3004:3004
+    networks:
+      - sharednet
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    env_file:
+      - ./apps/oauth/.env
+    depends_on:
+      - postgres
+      - rabbitmq
+
   postgres:
     container_name: shopify-postgres
     image: postgres:16.1
