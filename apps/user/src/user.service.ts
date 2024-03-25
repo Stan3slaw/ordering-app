@@ -1,8 +1,15 @@
-import { ConflictException, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { isNil } from 'lodash';
 import { hash } from 'bcryptjs';
 
 import { ClientProxy, RpcException } from '@nestjs/microservices';
+
+import { isEmail } from 'class-validator';
 
 import { OAuthProviders } from '@app/common/enums/oauth-providers.enum';
 
@@ -10,6 +17,7 @@ import type { CreateUser } from './interfaces/create-user.interface';
 import type { UserEntity } from './entities/user.entity';
 import { UserRepository } from './user.repository';
 import { OAUTH_SERVICE } from './constants/services.constants';
+import type { UserResponseDto } from './dtos/user-response.dto';
 
 @Injectable()
 export class UserService {
@@ -39,12 +47,27 @@ export class UserService {
     };
   }
 
-  public async create(
+  private static async mapUserEntityToUserResponseDto(
+    userEntity: UserEntity,
+  ): Promise<UserResponseDto> {
+    return {
+      id: userEntity.id,
+      name: userEntity.name,
+      email: userEntity.email,
+      password: userEntity.password,
+      confirmed: userEntity.confirmed,
+      credentials: userEntity.credentials,
+      createdAt: userEntity.created_at,
+      updatedAt: userEntity.updated_at,
+    };
+  }
+
+  async create(
     provider: OAuthProviders,
     email: string,
     name: string,
     password?: string,
-  ): Promise<UserEntity> {
+  ): Promise<UserResponseDto> {
     const isConfirmed = provider !== OAuthProviders.LOCAL;
     const formattedEmail = email.toLowerCase();
 
@@ -68,6 +91,26 @@ export class UserService {
       userId: createdUser.id,
     });
 
-    return createdUser;
+    const mappedUserToUserResponseDto =
+      UserService.mapUserEntityToUserResponseDto(createdUser);
+
+    return mappedUserToUserResponseDto;
+  }
+
+  async findOneByEmail(email: string): Promise<UserResponseDto> {
+    if (!isEmail(email)) {
+      throw new RpcException(new BadRequestException('invalid email'));
+    }
+
+    const foundUser = await this.userRepository.findOneByEmail(email);
+
+    if (!foundUser) {
+      throw new RpcException(new BadRequestException('there are no such user'));
+    }
+
+    const mappedUserToUserResponseDto =
+      UserService.mapUserEntityToUserResponseDto(foundUser);
+
+    return mappedUserToUserResponseDto;
   }
 }

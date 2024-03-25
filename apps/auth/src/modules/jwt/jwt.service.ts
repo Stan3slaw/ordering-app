@@ -5,7 +5,7 @@ import { v4 } from 'uuid';
 
 import { throwInternalError } from '@app/common/utils/error-handler.util';
 
-import type { UserEntity } from 'apps/user/src/entities/user.entity';
+import type { UserResponseDto } from 'apps/user/src/dtos/user-response.dto';
 
 import type { Jwt } from './interfaces/jwt.interface';
 import { TokenType } from './enums/token-type.enum';
@@ -85,7 +85,7 @@ export class JwtService {
   }
 
   async generateToken(
-    user: UserEntity,
+    user: UserResponseDto,
     tokenType: TokenType,
     domain?: string | null,
     tokenId?: string,
@@ -179,7 +179,7 @@ export class JwtService {
   }
 
   async generateAuthTokens(
-    user: UserEntity,
+    user: UserResponseDto,
     domain?: string,
     tokenId?: string,
   ): Promise<[string, string]> {

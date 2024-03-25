@@ -1,6 +1,11 @@
+import { readFileSync } from 'fs';
+
 import type { Config } from './env-config.interface';
 
 export function envConfig(): Config {
+  const publicKey = readFileSync('../keys/public.key', 'utf-8');
+  const privateKey = readFileSync('../keys/private.key', 'utf-8');
+
   return {
     port: parseInt(process.env.PORT, 10),
     appId: process.env.APP_ID,
@@ -10,8 +15,8 @@ export function envConfig(): Config {
     domain: process.env.DOMAIN,
     jwt: {
       access: {
-        privateKey: process.env.JWT_PRIVATE_KEY,
-        publicKey: process.env.JWT_PUBLIC_KEY,
+        privateKey,
+        publicKey,
         time: parseInt(process.env.JWT_ACCESS_TIME, 10),
       },
       confirmation: {

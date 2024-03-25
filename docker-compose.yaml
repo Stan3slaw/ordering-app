@@ -74,6 +74,7 @@ services:
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
+      - ${KEYS_FOLDER_FULL_PATH}:/usr/src/keys
     env_file:
       - ./apps/auth/.env
     depends_on:

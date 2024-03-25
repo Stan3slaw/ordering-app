@@ -5,7 +5,7 @@ import { RmqService } from '@app/common';
 
 import { UserService } from './user.service';
 import { CreateUserDto } from './dtos/create-user.interface';
-import type { UserEntity } from './entities/user.entity';
+import type { UserResponseDto } from './dtos/user-response.dto';
 
 @Controller()
 export class UserController {
@@ -19,7 +19,7 @@ export class UserController {
     @Payload()
     payload: CreateUserDto,
     @Ctx() context: RmqContext,
-  ): Promise<UserEntity> {
+  ): Promise<UserResponseDto> {
     const createdUser = await this.userService.create(
       payload.provider,
       payload.email,
@@ -29,5 +29,17 @@ export class UserController {
     await this.rmqService.ack(context);
 
     return createdUser;
+  }
+
+  @EventPattern('find_user_by_email')
+  async handleFindUserByEmail(
+    @Payload('email')
+    email: string,
+    @Ctx() context: RmqContext,
+  ): Promise<UserResponseDto> {
+    const foundUser = await this.userService.findOneByEmail(email);
+    await this.rmqService.ack(context);
+
+    return foundUser;
   }
 }
