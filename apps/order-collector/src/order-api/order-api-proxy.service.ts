@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import type { AxiosResponse, Method } from 'axios';
 import { lastValueFrom } from 'rxjs';
@@ -69,10 +69,7 @@ export class OrderApiProxyService {
         }`,
       );
 
-      throw new HttpException(
-        'Unable to send a request',
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new BadRequestException('Unable to send a request');
     }
   }
 }

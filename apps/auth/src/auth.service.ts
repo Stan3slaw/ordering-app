@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { UnauthorizedException, Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { compare } from 'bcryptjs';
 import { lastValueFrom } from 'rxjs';
@@ -30,7 +30,7 @@ export class AuthService {
     const { lastPassword, passwordUpdatedAt } = credentials;
 
     if (lastPassword.length === 0 || !(await compare(password, lastPassword))) {
-      throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
+      throw new UnauthorizedException('Invalid credentials');
     }
 
     const now = dayjs();
@@ -39,38 +39,35 @@ export class AuthService {
     const message = 'You changed your password ';
 
     if (months > 0) {
-      throw new HttpException(
+      throw new UnauthorizedException(
         message + months + (months > 1 ? ' months ago' : ' month ago'),
-        HttpStatus.UNAUTHORIZED,
       );
     }
 
     const days = now.diff(time, 'day');
 
     if (days > 0) {
-      throw new HttpException(
+      throw new UnauthorizedException(
         message + days + (days > 1 ? ' days ago' : ' day ago'),
-        HttpStatus.UNAUTHORIZED,
       );
     }
 
     const hours = now.diff(time, 'hour');
 
     if (hours > 0) {
-      throw new HttpException(
+      throw new UnauthorizedException(
         message + hours + (hours > 1 ? ' hours ago' : ' hour ago'),
-        HttpStatus.UNAUTHORIZED,
       );
     }
 
-    throw new HttpException(message + 'recently', HttpStatus.UNAUTHORIZED);
+    throw new UnauthorizedException(message + 'recently');
   }
 
   public async signUp(signUpDto: SignUpDto, domain?: string): Promise<string> {
     const { name, email, password, passwordConfirmation } = signUpDto;
 
     if (password !== passwordConfirmation) {
-      throw new HttpException('Passwords do not match', HttpStatus.BAD_REQUEST);
+      throw new UnauthorizedException('Passwords do not match');
     }
 
     const createdUser: UserResponseDto = await lastValueFrom(
@@ -130,9 +127,8 @@ export class AuthService {
     //   // TODO: implement mailerService
     //   // this.mailerService.sendConfirmationEmail(user, confirmationToken);
 
-    //   throw new HttpException(
+    //   throw new UnauthorizedException(
     //     'please confirm your email, a new email has been sent',
-    //     HttpStatus.UNAUTHORIZED,
     //   );
     // }
 

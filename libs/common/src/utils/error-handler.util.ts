@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { InternalServerErrorException } from '@nestjs/common';
 
 export async function throwInternalError<T>(promise: Promise<T>): Promise<T> {
   try {
@@ -7,6 +7,6 @@ export async function throwInternalError<T>(promise: Promise<T>): Promise<T> {
     return result;
   } catch (error) {
     console.error(error);
-    throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    throw new InternalServerErrorException(error);
   }
 }

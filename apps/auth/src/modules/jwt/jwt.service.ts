@@ -1,4 +1,8 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as jwt from 'jsonwebtoken';
 import { v4 } from 'uuid';
@@ -75,12 +79,12 @@ export class JwtService {
       return await promise;
     } catch (error) {
       if (error instanceof jwt.TokenExpiredError) {
-        throw new HttpException('Token expired', HttpStatus.BAD_REQUEST);
+        throw new BadRequestException('Token expired');
       }
       if (error instanceof jwt.JsonWebTokenError) {
-        throw new HttpException('Invalid token', HttpStatus.BAD_REQUEST);
+        throw new BadRequestException('Invalid token');
       }
-      throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new InternalServerErrorException(error);
     }
   }
 

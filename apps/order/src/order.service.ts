@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { isNil } from 'lodash';
 import { ClientProxy } from '@nestjs/microservices';
 import { Cron, CronExpression } from '@nestjs/schedule';
@@ -92,7 +92,7 @@ export class OrderService {
     const foundOrder = await this.orderRepository.findOne(orderId);
 
     if (!foundOrder) {
-      throw new HttpException('Order does not exist', HttpStatus.NOT_FOUND);
+      throw new NotFoundException('Order does not exist');
     }
 
     return OrderService.mapOrderEntityToOrderResponseDto(foundOrder);
@@ -105,7 +105,7 @@ export class OrderService {
     const foundOrder = await this.orderRepository.findOne(orderId);
 
     if (!foundOrder) {
-      throw new HttpException('Order does not exist', HttpStatus.NOT_FOUND);
+      throw new NotFoundException('Order does not exist');
     }
 
     const updatedOrder = await this.orderRepository.update(
